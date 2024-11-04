@@ -4,6 +4,9 @@ import json
 import os
 import platform
 import logging
+from pathlib import Path
+from docx import Document
+
 
 from utils.decorators import log_function_status
 
@@ -216,7 +219,7 @@ class Tools:
         if recycle_bin: send2trash(full_path)
 
 
-    def create_csv_file_windows(self, folder_path=default_folder_path, file_name=None, data=None, recycle_bin=False, is_hidden=False):
+    def create_csv_file_windows(self, folder_path=default_folder_path, file_name=None, data=None, recycle_bin=False, is_hidden=False) ->None:
         """Creates a CSV file and writes the given data to it."""
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
@@ -238,3 +241,32 @@ class Tools:
             logging.debug(f"An error occurred while creating the CSV file: {e}")
         if is_hidden: ctypes.windll.kernel32.SetFileAttributesW(full_path, 0x02)  # 0x02 is the hidden attribute
         if recycle_bin: send2trash(full_path)
+
+
+    def create_hidden_directory(self,path=None) ->None:
+        # Define the path for the hidden folder
+        formatted_path = Path(path)
+        # Create the folder
+        formatted_path.mkdir(parents=True, exist_ok=True)
+
+        # Set the folder to hidden
+        os.system(f'attrib +h "{formatted_path}"')
+
+    def create_doc_file(self, folder_path=default_folder_path, secret=None,is_hidden=False, recycle_bin=False) ->None:
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        formatted_path = Path(folder_path + secret["name"] + ".docx")  # Update this path as needed
+        # Create a new Document
+        doc = Document()
+        # Add a title
+        doc.add_heading('My Document Title', level=1)
+        # Add a paragraph
+        doc.add_paragraph(secret["example"])
+        # Add another paragraph with bold text
+        doc.add_paragraph('This is another paragraph with ', 'Normal').add_run('bold text.').bold = True
+        # Save the document
+        doc.save(formatted_path)
+
+        if recycle_bin: send2trash(formatted_path)
+        if is_hidden: os.system(f'attrib +h "{formatted_path}"')

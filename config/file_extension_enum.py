@@ -1,9 +1,6 @@
 from enum import Enum
 
-from adodbapi.process_connect_string import process
-
-
-class FileSuffixEnum(Enum):
+class FileExtensionEnum(Enum):
 
 
 
@@ -15,13 +12,14 @@ class FileSuffixEnum(Enum):
     json = ".json"
     pem = ".pem"
     uppercase_text = ".TXT"
+    doc =".docx"
 
 
     def __init__(self,suffix):
         self.suffix = suffix
 
-class FileSuffixHandler:
+class FileExtensionHandler:
     @property
     def return_enum_list(self):
         """Return a list of all file suffixes."""
-        return [suffix.value for suffix in FileSuffixEnum]
+        return [suffix.value for suffix in FileExtensionEnum]
